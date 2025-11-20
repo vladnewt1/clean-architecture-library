@@ -1,0 +1,63 @@
+@LibraryManagement.API_HostAddress = http://localhost:5082
+
+### Отримати всі книги
+GET {{LibraryManagement.API_HostAddress}}/api/books
+Accept: application/json
+
+###
+
+### Отримати книгу за ID
+GET {{LibraryManagement.API_HostAddress}}/api/books/1
+Accept: application/json
+
+###
+
+### Створити нову книгу
+POST {{LibraryManagement.API_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "title": "Clean Architecture",
+  "author": "Robert C. Martin",
+  "isbn": "978-0134494166",
+  "publishedYear": 2017,
+  "totalCopies": 5
+}
+
+###
+
+### Створити ще одну книгу
+POST {{LibraryManagement.API_HostAddress}}/api/books
+Content-Type: application/json
+
+{
+  "title": "Domain-Driven Design",
+  "author": "Eric Evans",
+  "isbn": "978-0321125217",
+  "publishedYear": 2003,
+  "totalCopies": 3
+}
+
+###
+
+### Оновити книгу
+PUT {{LibraryManagement.API_HostAddress}}/api/books/1
+Content-Type: application/json
+
+{
+  "title": "Clean Architecture (Updated)",
+  "author": "Robert C. Martin",
+  "publishedYear": 2017,
+  "totalCopies": 10
+}
+
+###
+
+### Пошук книг
+GET {{LibraryManagement.API_HostAddress}}/api/books/search?term=Clean
+Accept: application/json
+
+###
+
+### Видалити книгу
+DELETE {{LibraryManagement.API_HostAddress}}/api/books/1
