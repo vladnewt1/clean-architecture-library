@@ -13,12 +13,18 @@ public class LoanService : ILoanService
     private readonly IBookRepository _bookRepository;
     private readonly IMemberRepository _memberRepository;
     private readonly LoanDomainService _loanDomainService;
+    private readonly IUnitOfWork _unitOfWork;
 
-    public LoanService(ILoanRepository loanRepository, IBookRepository bookRepository, IMemberRepository memberRepository)
+    public LoanService(
+        ILoanRepository loanRepository, 
+        IBookRepository bookRepository, 
+        IMemberRepository memberRepository,
+        IUnitOfWork unitOfWork)
     {
         _loanRepository = loanRepository;
         _bookRepository = bookRepository;
         _memberRepository = memberRepository;
+        _unitOfWork = unitOfWork;
         _loanDomainService = new LoanDomainService();
     }
 
@@ -44,13 +50,23 @@ public class LoanService : ILoanService
         if (member == null)
             throw new Exception($"Member with id {loanDto.MemberId} not found");
 
-        // Використовуємо Domain Service для валідації та створення позички
-        var loan = _loanDomainService.CreateLoan(book, member, loanDto.Notes);
-        
-        await _bookRepository.UpdateAsync(book);
-        var createdLoan = await _loanRepository.AddAsync(loan);
-        
-        return MapToDto(createdLoan);
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            // Використовуємо Domain Service для валідації та створення позички
+            var loan = _loanDomainService.CreateLoan(book, member, loanDto.Notes);
+            
+            await _bookRepository.UpdateAsync(book);
+            var createdLoan = await _loanRepository.AddAsync(loan);
+            await _unitOfWork.CommitTransactionAsync();
+            
+            return MapToDto(createdLoan);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 
     public async Task<LoanDto> ReturnLoanAsync(int loanId, ReturnLoanDto returnDto)
@@ -63,13 +79,23 @@ public class LoanService : ILoanService
         if (book == null)
             throw new Exception($"Book with id {loan.BookId} not found");
 
-        // Використовуємо Domain Service для повернення
-        _loanDomainService.ReturnLoan(loan, book, returnDto.Notes);
-        
-        await _bookRepository.UpdateAsync(book);
-        await _loanRepository.UpdateAsync(loan);
-        
-        return MapToDto(loan);
+        await _unitOfWork.BeginTransactionAsync();
+        try
+        {
+            // Використовуємо Domain Service для повернення
+            _loanDomainService.ReturnLoan(loan, book, returnDto.Notes);
+            
+            await _bookRepository.UpdateAsync(book);
+            await _loanRepository.UpdateAsync(loan);
+            await _unitOfWork.CommitTransactionAsync();
+            
+            return MapToDto(loan);
+        }
+        catch
+        {
+            await _unitOfWork.RollbackTransactionAsync();
+            throw;
+        }
     }
 
     public async Task<IEnumerable<LoanDto>> GetActiveLoansByMemberIdAsync(int memberId)
