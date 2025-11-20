@@ -1,0 +1,48 @@
+### Test Member Registration (MemberRegisteredEvent)
+POST http://localhost:5000/api/membermanagement/register
+Content-Type: application/json
+
+{
+  "firstName": "Іван",
+  "lastName": "Петренко",
+  "email": "ivan.petrenko@test.com",
+  "phoneNumber": "+380501234567",
+  "dateOfBirth": "1990-01-01",
+  "address": {
+    "street": "вул. Шевченка 10",
+    "city": "Київ",
+    "state": "Київська обл.",
+    "zipCode": "01001",
+    "country": "Україна"
+  },
+  "membershipType": "Standard"
+}
+
+### Add a book first
+POST http://localhost:5000/api/books
+Content-Type: application/json
+
+{
+  "title": "Кобзар",
+  "author": "Тарас Шевченко",
+  "isbn": "978-617-12-5432-1",
+  "publishedYear": 1840,
+  "category": "Poetry",
+  "availableCopies": 5,
+  "totalCopies": 5
+}
+
+### Create a loan (BookBorrowedEvent)
+POST http://localhost:5000/api/loans
+Content-Type: application/json
+
+{
+  "bookId": 1,
+  "memberId": 1
+}
+
+### Return a book (BookReturnedEvent)
+POST http://localhost:5000/api/loans/1/return
+Content-Type: application/json
+
+{}

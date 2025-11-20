@@ -10,6 +10,8 @@ public abstract class Entity<TId>
 
     public IReadOnlyCollection<IDomainEvent> DomainEvents => _domainEvents.AsReadOnly();
 
+    public IEnumerable<IDomainEvent> GetDomainEvents() => _domainEvents;
+
     protected void RaiseDomainEvent(IDomainEvent domainEvent)
     {
         _domainEvents.Add(domainEvent);

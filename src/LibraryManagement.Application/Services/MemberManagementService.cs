@@ -57,6 +57,11 @@ public class MemberManagementService : IMemberManagementService
         try
         {
             var createdMember = await _memberRepository.AddAsync(member);
+            await _unitOfWork.SaveChangesAsync(); // Зберігаємо щоб отримати Id
+            
+            // Тепер викликаємо подію з правильним Id
+            createdMember.RegisterMember();
+            
             await _unitOfWork.CommitTransactionAsync();
             return MapToDto(createdMember);
         }

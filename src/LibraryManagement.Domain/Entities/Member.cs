@@ -86,9 +86,14 @@ public class Member : AggregateRoot<int>
             throw new ArgumentNullException(nameof(address));
 
         var member = new Member(firstName, lastName, email, phoneNumber, dateOfBirth, address, membershipType);
-        member.RaiseDomainEvent(new MemberRegisteredEvent(member.Id, member.LibraryCardNumber, DateTime.UtcNow));
         
         return member;
+    }
+
+    public void RegisterMember()
+    {
+        // Викликаємо подію ПІСЛЯ того як Id встановлено (після збереження в БД)
+        RaiseDomainEvent(new MemberRegisteredEvent(Id, LibraryCardNumber, DateTime.UtcNow));
     }
 
     public void UpdatePersonalInfo(

@@ -1,5 +1,8 @@
+using LibraryManagement.Application.Common;
+using LibraryManagement.Application.EventHandlers;
 using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Application.Services;
+using LibraryManagement.Domain.Events;
 using LibraryManagement.Domain.Interfaces;
 using LibraryManagement.Infrastructure.Data;
 using LibraryManagement.Infrastructure.Repositories;
@@ -31,14 +34,22 @@ builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IMemberManagementService, MemberManagementService>();
 
+// Register Event Driven Architecture components
+builder.Services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();
+builder.Services.AddScoped<INotificationService, NotificationService>();
+builder.Services.AddScoped<IAuditLogService, AuditLogService>();
+
+// Register Event Handlers
+builder.Services.AddScoped<IDomainEventHandler<BookBorrowedEvent>, BookBorrowedEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<BookReturnedEvent>, BookReturnedEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<MemberRegisteredEvent>, MemberRegisteredEventHandler>();
+builder.Services.AddScoped<IDomainEventHandler<LoanOverdueEvent>, LoanOverdueEventHandler>();
+
 var app = builder.Build();
 
 // Configure the HTTP request pipeline
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
+app.UseSwagger();
+app.UseSwaggerUI();
 
 app.UseHttpsRedirection();
 app.UseAuthorization();
