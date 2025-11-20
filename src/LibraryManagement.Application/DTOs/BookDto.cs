@@ -45,6 +45,7 @@ public class UpdateBookDto
     public BookCategory Category { get; set; }
     public string Description { get; set; } = string.Empty;
     public int PageCount { get; set; }
+    public string Language { get; set; } = "Ukrainian";
     public int TotalCopies { get; set; }
     public decimal Price { get; set; }
     public string CoverImageUrl { get; set; } = string.Empty;

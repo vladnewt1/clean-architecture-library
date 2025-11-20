@@ -23,7 +23,6 @@ public class CreateLoanDto
 {
     public int BookId { get; set; }
     public int MemberId { get; set; }
-    public int LoanDurationDays { get; set; } = 14;
     public string Notes { get; set; } = string.Empty;
 }
 

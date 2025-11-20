@@ -28,23 +28,20 @@ public class BookService : IBookService
 
     public async Task<BookDto> CreateAsync(CreateBookDto bookDto)
     {
-        var book = new Book
-        {
-            Title = bookDto.Title,
-            Author = bookDto.Author,
-            ISBN = bookDto.ISBN,
-            PublishedYear = bookDto.PublishedYear,
-            Publisher = bookDto.Publisher,
-            Category = bookDto.Category,
-            Description = bookDto.Description,
-            PageCount = bookDto.PageCount,
-            Language = bookDto.Language,
-            TotalCopies = bookDto.TotalCopies,
-            AvailableCopies = bookDto.TotalCopies,
-            Price = bookDto.Price,
-            CoverImageUrl = bookDto.CoverImageUrl,
-            CreatedAt = DateTime.UtcNow
-        };
+        var book = Book.Create(
+            bookDto.Title,
+            bookDto.Author,
+            bookDto.ISBN,
+            bookDto.PublishedYear,
+            bookDto.Publisher,
+            bookDto.Category,
+            bookDto.Description,
+            bookDto.PageCount,
+            bookDto.Language,
+            bookDto.TotalCopies,
+            bookDto.Price,
+            bookDto.CoverImageUrl
+        );
 
         var createdBook = await _bookRepository.AddAsync(book);
         return MapToDto(createdBook);
@@ -56,17 +53,17 @@ public class BookService : IBookService
         if (book == null)
             throw new Exception($"Book with id {id} not found");
 
-        book.Title = bookDto.Title;
-        book.Author = bookDto.Author;
-        book.PublishedYear = bookDto.PublishedYear;
-        book.Publisher = bookDto.Publisher;
-        book.Category = bookDto.Category;
-        book.Description = bookDto.Description;
-        book.PageCount = bookDto.PageCount;
-        book.TotalCopies = bookDto.TotalCopies;
-        book.Price = bookDto.Price;
-        book.CoverImageUrl = bookDto.CoverImageUrl;
-        book.UpdatedAt = DateTime.UtcNow;
+        book.UpdateDetails(
+            bookDto.Title,
+            bookDto.Author,
+            bookDto.Publisher,
+            bookDto.Category,
+            bookDto.Description,
+            bookDto.PageCount,
+            bookDto.Language,
+            bookDto.Price,
+            bookDto.CoverImageUrl
+        );
 
         await _bookRepository.UpdateAsync(book);
     }

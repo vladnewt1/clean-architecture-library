@@ -3,6 +3,7 @@ using LibraryManagement.Application.Interfaces;
 using LibraryManagement.Domain.Entities;
 using LibraryManagement.Domain.Enums;
 using LibraryManagement.Domain.Interfaces;
+using LibraryManagement.Domain.Services;
 
 namespace LibraryManagement.Application.Services;
 
@@ -11,12 +12,14 @@ public class LoanService : ILoanService
     private readonly ILoanRepository _loanRepository;
     private readonly IBookRepository _bookRepository;
     private readonly IMemberRepository _memberRepository;
+    private readonly LoanDomainService _loanDomainService;
 
     public LoanService(ILoanRepository loanRepository, IBookRepository bookRepository, IMemberRepository memberRepository)
     {
         _loanRepository = loanRepository;
         _bookRepository = bookRepository;
         _memberRepository = memberRepository;
+        _loanDomainService = new LoanDomainService();
     }
 
     public async Task<LoanDto?> GetByIdAsync(int id)
@@ -33,43 +36,20 @@ public class LoanService : ILoanService
 
     public async Task<LoanDto> CreateLoanAsync(CreateLoanDto loanDto)
     {
-        // Перевірка наявності книги
         var book = await _bookRepository.GetByIdAsync(loanDto.BookId);
         if (book == null)
             throw new Exception($"Book with id {loanDto.BookId} not found");
 
-        if (book.AvailableCopies <= 0)
-            throw new Exception($"Book '{book.Title}' is not available");
-
-        // Перевірка члена бібліотеки
         var member = await _memberRepository.GetByIdAsync(loanDto.MemberId);
         if (member == null)
             throw new Exception($"Member with id {loanDto.MemberId} not found");
 
-        if (!member.IsActive)
-            throw new Exception($"Member {member.FullName} is not active");
-
-        // Перевірка ліміту книг
-        var activeLoans = await _loanRepository.GetActiveLoansByMemberIdAsync(loanDto.MemberId);
-        if (activeLoans.Count() >= member.MaxBooksAllowed)
-            throw new Exception($"Member has reached the maximum number of allowed books ({member.MaxBooksAllowed})");
-
-        var loan = new Loan
-        {
-            BookId = loanDto.BookId,
-            MemberId = loanDto.MemberId,
-            LoanDate = DateTime.UtcNow,
-            DueDate = DateTime.UtcNow.AddDays(loanDto.LoanDurationDays),
-            Status = LoanStatus.Active,
-            Notes = loanDto.Notes,
-            CreatedAt = DateTime.UtcNow
-        };
-
-        // Зменшити кількість доступних копій
-        book.AvailableCopies--;
+        // Використовуємо Domain Service для валідації та створення позички
+        var loan = _loanDomainService.CreateLoan(book, member, loanDto.Notes);
+        
         await _bookRepository.UpdateAsync(book);
-
         var createdLoan = await _loanRepository.AddAsync(loan);
+        
         return MapToDto(createdLoan);
     }
 
@@ -79,30 +59,16 @@ public class LoanService : ILoanService
         if (loan == null)
             throw new Exception($"Loan with id {loanId} not found");
 
-        if (loan.Status != LoanStatus.Active && loan.Status != LoanStatus.Overdue)
-            throw new Exception($"Loan is already returned or closed");
-
-        loan.ReturnDate = returnDto.ReturnDate;
-        loan.Status = LoanStatus.Returned;
-        loan.Notes = string.IsNullOrEmpty(returnDto.Notes) ? loan.Notes : $"{loan.Notes}; {returnDto.Notes}";
-        loan.UpdatedAt = DateTime.UtcNow;
-
-        // Розрахунок штрафу за прострочення
-        if (returnDto.ReturnDate > loan.DueDate)
-        {
-            var daysLate = (returnDto.ReturnDate - loan.DueDate).Days;
-            loan.LateFee = daysLate * 5m; // 5 грн за день
-        }
-
-        // Збільшити кількість доступних копій
         var book = await _bookRepository.GetByIdAsync(loan.BookId);
-        if (book != null)
-        {
-            book.AvailableCopies++;
-            await _bookRepository.UpdateAsync(book);
-        }
+        if (book == null)
+            throw new Exception($"Book with id {loan.BookId} not found");
 
+        // Використовуємо Domain Service для повернення
+        _loanDomainService.ReturnLoan(loan, book, returnDto.Notes);
+        
+        await _bookRepository.UpdateAsync(book);
         await _loanRepository.UpdateAsync(loan);
+        
         return MapToDto(loan);
     }
 

@@ -29,35 +29,23 @@ public class MemberService : IMemberService
 
     public async Task<MemberDto> CreateAsync(CreateMemberDto memberDto)
     {
-        var member = new Member
-        {
-            FirstName = memberDto.FirstName,
-            LastName = memberDto.LastName,
-            Email = memberDto.Email,
-            PhoneNumber = memberDto.PhoneNumber,
-            DateOfBirth = memberDto.DateOfBirth,
-            Address = new Address
-            {
-                Street = memberDto.Address.Street,
-                City = memberDto.Address.City,
-                State = memberDto.Address.State,
-                ZipCode = memberDto.Address.ZipCode,
-                Country = memberDto.Address.Country
-            },
-            MembershipType = memberDto.MembershipType,
-            MembershipDate = DateTime.UtcNow,
-            MembershipExpiryDate = DateTime.UtcNow.AddYears(1),
-            IsActive = true,
-            MaxBooksAllowed = memberDto.MembershipType switch
-            {
-                Domain.Enums.MembershipType.Standard => 3,
-                Domain.Enums.MembershipType.Premium => 5,
-                Domain.Enums.MembershipType.VIP => 10,
-                _ => 3
-            },
-            LibraryCardNumber = GenerateLibraryCardNumber(),
-            CreatedAt = DateTime.UtcNow
-        };
+        var address = Address.Create(
+            memberDto.Address.Street,
+            memberDto.Address.City,
+            memberDto.Address.State,
+            memberDto.Address.ZipCode,
+            memberDto.Address.Country
+        );
+
+        var member = Member.Create(
+            memberDto.FirstName,
+            memberDto.LastName,
+            memberDto.Email,
+            memberDto.PhoneNumber,
+            memberDto.DateOfBirth,
+            address,
+            memberDto.MembershipType
+        );
 
         var createdMember = await _memberRepository.AddAsync(member);
         return MapToDto(createdMember);
@@ -69,20 +57,27 @@ public class MemberService : IMemberService
         if (member == null)
             throw new Exception($"Member with id {id} not found");
 
-        member.FirstName = memberDto.FirstName;
-        member.LastName = memberDto.LastName;
-        member.PhoneNumber = memberDto.PhoneNumber;
-        member.Address = new Address
-        {
-            Street = memberDto.Address.Street,
-            City = memberDto.Address.City,
-            State = memberDto.Address.State,
-            ZipCode = memberDto.Address.ZipCode,
-            Country = memberDto.Address.Country
-        };
-        member.MembershipType = memberDto.MembershipType;
-        member.IsActive = memberDto.IsActive;
-        member.UpdatedAt = DateTime.UtcNow;
+        var address = Address.Create(
+            memberDto.Address.Street,
+            memberDto.Address.City,
+            memberDto.Address.State,
+            memberDto.Address.ZipCode,
+            memberDto.Address.Country
+        );
+
+        member.UpdatePersonalInfo(
+            memberDto.FirstName,
+            memberDto.LastName,
+            member.Email,
+            memberDto.PhoneNumber,
+            member.DateOfBirth,
+            address
+        );
+
+        if (!memberDto.IsActive && member.IsActive)
+            member.Deactivate();
+        else if (memberDto.IsActive && !member.IsActive)
+            member.Activate();
 
         await _memberRepository.UpdateAsync(member);
     }
@@ -133,8 +128,4 @@ public class MemberService : IMemberService
         };
     }
 
-    private static string GenerateLibraryCardNumber()
-    {
-        return $"LIB{DateTime.UtcNow:yyyyMMdd}{Random.Shared.Next(1000, 9999)}";
-    }
 }
