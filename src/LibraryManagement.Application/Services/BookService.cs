@@ -34,8 +34,15 @@ public class BookService : IBookService
             Author = bookDto.Author,
             ISBN = bookDto.ISBN,
             PublishedYear = bookDto.PublishedYear,
+            Publisher = bookDto.Publisher,
+            Category = bookDto.Category,
+            Description = bookDto.Description,
+            PageCount = bookDto.PageCount,
+            Language = bookDto.Language,
             TotalCopies = bookDto.TotalCopies,
             AvailableCopies = bookDto.TotalCopies,
+            Price = bookDto.Price,
+            CoverImageUrl = bookDto.CoverImageUrl,
             CreatedAt = DateTime.UtcNow
         };
 
@@ -52,7 +59,13 @@ public class BookService : IBookService
         book.Title = bookDto.Title;
         book.Author = bookDto.Author;
         book.PublishedYear = bookDto.PublishedYear;
+        book.Publisher = bookDto.Publisher;
+        book.Category = bookDto.Category;
+        book.Description = bookDto.Description;
+        book.PageCount = bookDto.PageCount;
         book.TotalCopies = bookDto.TotalCopies;
+        book.Price = bookDto.Price;
+        book.CoverImageUrl = bookDto.CoverImageUrl;
         book.UpdatedAt = DateTime.UtcNow;
 
         await _bookRepository.UpdateAsync(book);
@@ -78,8 +91,15 @@ public class BookService : IBookService
             Author = book.Author,
             ISBN = book.ISBN,
             PublishedYear = book.PublishedYear,
+            Publisher = book.Publisher,
+            Category = book.Category,
+            Description = book.Description,
+            PageCount = book.PageCount,
+            Language = book.Language,
             AvailableCopies = book.AvailableCopies,
-            TotalCopies = book.TotalCopies
+            TotalCopies = book.TotalCopies,
+            Price = book.Price,
+            CoverImageUrl = book.CoverImageUrl
         };
     }
 }

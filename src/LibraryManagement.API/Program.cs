@@ -12,15 +12,19 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
-// Configure DbContext with In-Memory Database
+// Configure DbContext with SQLite Database
 builder.Services.AddDbContext<LibraryDbContext>(options =>
-    options.UseInMemoryDatabase("LibraryDb"));
+    options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
 
 // Register repositories
 builder.Services.AddScoped<IBookRepository, BookRepository>();
+builder.Services.AddScoped<IMemberRepository, MemberRepository>();
+builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
 // Register services
 builder.Services.AddScoped<IBookService, BookService>();
+builder.Services.AddScoped<IMemberService, MemberService>();
+builder.Services.AddScoped<ILoanService, LoanService>();
 
 var app = builder.Build();
 
