@@ -27,12 +27,22 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
-// Register services
+// Register Domain Services (DIP - Dependency Inversion Principle)
+builder.Services.AddScoped<ILoanDomainService, LibraryManagement.Domain.Services.LoanDomainService>();
+builder.Services.AddScoped<IInventoryDomainService, LibraryManagement.Domain.Services.InventoryDomainService>();
+
+// Register Application Services
 builder.Services.AddScoped<IBookService, BookService>();
 builder.Services.AddScoped<IMemberService, MemberService>();
 builder.Services.AddScoped<ILoanService, LoanService>();
 builder.Services.AddScoped<IInventoryService, InventoryService>();
 builder.Services.AddScoped<IMemberManagementService, MemberManagementService>();
+
+// Register Notification Services (SRP & ISP - разделили на Email и SMS)
+builder.Services.AddScoped<LibraryManagement.Application.Services.Notifications.IEmailNotificationService, 
+    LibraryManagement.Application.Services.Notifications.EmailNotificationService>();
+builder.Services.AddScoped<LibraryManagement.Application.Services.Notifications.ISmsNotificationService, 
+    LibraryManagement.Application.Services.Notifications.SmsNotificationService>();
 
 // Register Event Driven Architecture components
 builder.Services.AddScoped<IDomainEventDispatcher, DomainEventDispatcher>();

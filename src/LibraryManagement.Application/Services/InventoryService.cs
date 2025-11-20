@@ -14,19 +14,24 @@ public interface IInventoryService
     Task<IEnumerable<BookDto>> GetOutOfStockBooksAsync();
 }
 
+/// <summary>
+/// Application Service для інвентаризації
+/// Виправлено DIP - тепер залежить від інтерфейсу IInventoryDomainService
+/// </summary>
 public class InventoryService : IInventoryService
 {
     private readonly IBookRepository _bookRepository;
-    private readonly InventoryDomainService _inventoryDomainService;
+    private readonly IInventoryDomainService _inventoryDomainService;
     private readonly IUnitOfWork _unitOfWork;
 
     public InventoryService(
         IBookRepository bookRepository,
+        IInventoryDomainService inventoryDomainService,
         IUnitOfWork unitOfWork)
     {
         _bookRepository = bookRepository;
+        _inventoryDomainService = inventoryDomainService;
         _unitOfWork = unitOfWork;
-        _inventoryDomainService = new InventoryDomainService();
     }
 
     public async Task<InventoryReportDto> GetInventoryReportAsync()
@@ -55,7 +60,7 @@ public class InventoryService : IInventoryService
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            _inventoryDomainService.AddBookCopies(book, quantity, reason);
+            _inventoryDomainService.AddBookCopies(book, quantity);
             await _bookRepository.UpdateAsync(book);
             await _unitOfWork.CommitTransactionAsync();
         }
@@ -75,7 +80,7 @@ public class InventoryService : IInventoryService
         await _unitOfWork.BeginTransactionAsync();
         try
         {
-            _inventoryDomainService.RemoveBookCopies(book, quantity, reason);
+            _inventoryDomainService.RemoveBookCopies(book, quantity);
             await _bookRepository.UpdateAsync(book);
             await _unitOfWork.CommitTransactionAsync();
         }

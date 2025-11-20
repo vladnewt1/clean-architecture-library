@@ -1,8 +1,13 @@
 using LibraryManagement.Domain.Entities;
+using LibraryManagement.Domain.Interfaces;
 
 namespace LibraryManagement.Domain.Services;
 
-public class LoanDomainService
+/// <summary>
+/// Domain Service для бізнес-логіки позик
+/// Тепер дотримується DIP - має інтерфейс
+/// </summary>
+public class LoanDomainService : ILoanDomainService
 {
     public bool CanCreateLoan(Book book, Member member, out string? errorMessage)
     {

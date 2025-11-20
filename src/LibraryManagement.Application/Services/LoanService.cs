@@ -7,25 +7,30 @@ using LibraryManagement.Domain.Services;
 
 namespace LibraryManagement.Application.Services;
 
+/// <summary>
+/// Application Service для позик
+/// Виправлено DIP - тепер залежить від інтерфейсу ILoanDomainService, а не конкретного класу
+/// </summary>
 public class LoanService : ILoanService
 {
     private readonly ILoanRepository _loanRepository;
     private readonly IBookRepository _bookRepository;
     private readonly IMemberRepository _memberRepository;
-    private readonly LoanDomainService _loanDomainService;
+    private readonly ILoanDomainService _loanDomainService;
     private readonly IUnitOfWork _unitOfWork;
 
     public LoanService(
         ILoanRepository loanRepository, 
         IBookRepository bookRepository, 
         IMemberRepository memberRepository,
+        ILoanDomainService loanDomainService,
         IUnitOfWork unitOfWork)
     {
         _loanRepository = loanRepository;
         _bookRepository = bookRepository;
         _memberRepository = memberRepository;
+        _loanDomainService = loanDomainService;
         _unitOfWork = unitOfWork;
-        _loanDomainService = new LoanDomainService();
     }
 
     public async Task<LoanDto?> GetByIdAsync(int id)

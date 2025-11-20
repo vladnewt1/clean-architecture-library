@@ -1,27 +1,32 @@
 using LibraryManagement.Domain.Entities;
+using LibraryManagement.Domain.Interfaces;
 
 namespace LibraryManagement.Domain.Services;
 
-public class InventoryDomainService
+/// <summary>
+/// Domain Service для бізнес-логіки інвентаризації
+/// Тепер дотримується DIP - має інтерфейс
+/// </summary>
+public class InventoryDomainService : IInventoryDomainService
 {
-    public void AddBookCopies(Book book, int quantity, string reason)
+    public void AddBookCopies(Book book, int count)
     {
-        if (quantity <= 0)
-            throw new ArgumentException("Quantity must be positive", nameof(quantity));
+        if (count <= 0)
+            throw new ArgumentException("Count must be positive", nameof(count));
 
-        book.AddCopies(quantity);
+        book.AddCopies(count);
     }
 
-    public void RemoveBookCopies(Book book, int quantity, string reason)
+    public void RemoveBookCopies(Book book, int count)
     {
-        if (quantity <= 0)
-            throw new ArgumentException("Quantity must be positive", nameof(quantity));
+        if (count <= 0)
+            throw new ArgumentException("Count must be positive", nameof(count));
 
-        if (book.AvailableCopies < quantity)
+        if (book.AvailableCopies < count)
             throw new InvalidOperationException(
-                $"Cannot remove {quantity} copies. Only {book.AvailableCopies} available.");
+                $"Cannot remove {count} copies. Only {book.AvailableCopies} available.");
 
-        book.RemoveCopies(quantity);
+        book.RemoveCopies(count);
     }
 
     public bool IsBookAvailableForBorrowing(Book book)
