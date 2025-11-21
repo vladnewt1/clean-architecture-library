@@ -1,3 +1,5 @@
+using FluentValidation;
+using FluentValidation.AspNetCore;
 using LibraryManagement.Application.Common;
 using LibraryManagement.Application.EventHandlers;
 using LibraryManagement.Application.Interfaces;
@@ -14,6 +16,10 @@ var builder = WebApplication.CreateBuilder(args);
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+
+// Configure FluentValidation (ПЗ7)
+builder.Services.AddFluentValidationAutoValidation();
+builder.Services.AddValidatorsFromAssemblyContaining<LibraryManagement.Application.Validators.CreateBookDtoValidator>();
 
 // Configure AutoMapper (ПР6)
 // Автоматично сканує всі Profile класи в Application assembly
