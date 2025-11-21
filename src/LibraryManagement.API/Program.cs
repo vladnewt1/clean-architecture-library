@@ -15,6 +15,10 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 
+// Configure AutoMapper (ПР6)
+// Автоматично сканує всі Profile класи в Application assembly
+builder.Services.AddAutoMapper(typeof(LibraryManagement.Application.Mappings.BookProfile).Assembly);
+
 // Configure DbContext with SQLite Database
 builder.Services.AddDbContext<LibraryDbContext>(options =>
     options.UseSqlite(builder.Configuration.GetConnectionString("DefaultConnection")));
