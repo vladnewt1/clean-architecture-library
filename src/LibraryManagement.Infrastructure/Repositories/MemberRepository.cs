@@ -5,52 +5,33 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 
-public class MemberRepository : IMemberRepository
+/// <summary>
+/// Concrete repository for Member entity
+/// Inherits from generic Repository<Member> and implements IMemberRepository with specific methods
+/// </summary>
+public class MemberRepository : Repository<Member>, IMemberRepository
 {
-    private readonly LibraryDbContext _context;
-
-    public MemberRepository(LibraryDbContext context)
+    public MemberRepository(LibraryDbContext context) : base(context)
     {
-        _context = context;
     }
 
-    public async Task<Member?> GetByIdAsync(int id)
+    // Override to include related Loans
+    public override async Task<Member?> GetByIdAsync(int id)
     {
         return await _context.Members
             .Include(m => m.Loans)
             .FirstOrDefaultAsync(m => m.Id == id);
     }
 
-    public async Task<IEnumerable<Member>> GetAllAsync()
+    // Override to include related Loans
+    public override async Task<IEnumerable<Member>> GetAllAsync()
     {
         return await _context.Members
             .Include(m => m.Loans)
             .ToListAsync();
     }
 
-    public async Task<Member> AddAsync(Member member)
-    {
-        _context.Members.Add(member);
-        await _context.SaveChangesAsync();
-        return member;
-    }
-
-    public async Task UpdateAsync(Member member)
-    {
-        _context.Members.Update(member);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        var member = await _context.Members.FindAsync(id);
-        if (member != null)
-        {
-            _context.Members.Remove(member);
-            await _context.SaveChangesAsync();
-        }
-    }
-
+    // Specific method for Member entity
     public async Task<Member?> GetByEmailAsync(string email)
     {
         return await _context.Members

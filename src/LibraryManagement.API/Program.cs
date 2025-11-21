@@ -37,6 +37,10 @@ builder.Services.AddScoped<IBookRepository, BookRepository>();
 builder.Services.AddScoped<IMemberRepository, MemberRepository>();
 builder.Services.AddScoped<ILoanRepository, LoanRepository>();
 
+// Register generic Repository<T> for demonstration (Scoped)
+// Демонструє використання generic repository pattern для будь-якої моделі
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+
 // Register Domain Services (Scoped - бізнес-логіка в межах запиту)
 builder.Services.AddScoped<ILoanDomainService, LibraryManagement.Domain.Services.LoanDomainService>();
 builder.Services.AddScoped<IInventoryDomainService, LibraryManagement.Domain.Services.InventoryDomainService>();
