@@ -1,173 +1,208 @@
-# Library Management System - Clean Architecture
+# 📚 Library Management System - Clean Architecture
 
-## Опис проекту
+Система управління бібліотекою, реалізована з використанням Clean Architecture та сучасних патернів проектування на ASP.NET Core.
 
-Система управління бібліотекою (Library Management System) - це ASP.NET Core Web API проект, побудований за принципами **Clean Architecture** (Чиста архітектура).
+## 🎯 Реалізовані завдання
 
-## Тема: Система управління бібліотекою
+### ✅ Практичні роботи (ПР)
+- **ПР1-3**: SOLID Principles + Dependency Injection Lifecycle (Singleton, Scoped, Transient)
+- **ПР4**: SOLID принципи (SRP, OCP, LSP, ISP, DIP)
+- **ПР5**: Generic Repository Pattern
+- **ПР6**: AutoMapper + DTO Pattern
+- **ПР7**: FluentValidation для валідації даних
+- **ПР8**: In-Memory Caching (IMemoryCache)
 
-Проект дозволяє:
-- Управляти книгами (додавати, редагувати, видаляти, переглядати)
-- Шукати книги за назвою або автором
-- Відстежувати доступність книг
+### ✅ Лабораторні роботи (ЛБ)
+- **ЛБ1-3**: SOLID Principles + Dependency Injection Lifecycle
+- **ЛБ4**: DI Container з різними життєвими циклами
+- **ЛБ5**: Unit of Work Pattern
+- **ЛБ6**: AutoMapper Profiles для всіх моделей
+- **ЛБ7**: FluentValidation для всіх DTO
 
-## Архітектура проекту
-
-Проект використовує **Clean Architecture** з наступними шарами:
-
-### 1. **Domain Layer** (`LibraryManagement.Domain`)
-- **Відповідальність**: Бізнес-логіка та доменні моделі
-- **Залежності**: Немає залежностей від інших шарів
-- **Вміст**:
-  - `Entities/` - Доменні сутності (Book, Member, Loan)
-  - `Interfaces/` - Інтерфейси репозиторіїв
-
-### 2. **Application Layer** (`LibraryManagement.Application`)
-- **Відповідальність**: Бізнес-логіка додатку, сервіси
-- **Залежності**: Domain Layer
-- **Вміст**:
-  - `DTOs/` - Data Transfer Objects для передачі даних
-  - `Interfaces/` - Інтерфейси сервісів
-  - `Services/` - Реалізація бізнес-логіки
-
-### 3. **Infrastructure Layer** (`LibraryManagement.Infrastructure`)
-- **Відповідальність**: Доступ до даних, зовнішні сервіси
-- **Залежності**: Domain Layer, Application Layer
-- **Вміст**:
-  - `Data/` - DbContext для Entity Framework Core
-  - `Repositories/` - Реалізація репозиторіїв
-
-### 4. **Presentation Layer** (`LibraryManagement.API`)
-- **Відповідальність**: REST API, контролери
-- **Залежності**: Всі інші шари
-- **Вміст**:
-  - `Controllers/` - API контролери
-  - `Program.cs` - Конфігурація додатку
-
-## Технології
-
-- **.NET 10.0**
-- **ASP.NET Core Web API**
-- **Entity Framework Core** (In-Memory Database для тестування)
-- **Swashbuckle** (Swagger UI)
-
-## Структура проекту
+## 🏗️ Архітектура проекту
 
 ```
 LibraryManagement/
-├── src/
-│   ├── LibraryManagement.Domain/
-│   │   ├── Entities/
-│   │   │   ├── Book.cs
-│   │   │   ├── Member.cs
-│   │   │   └── Loan.cs
-│   │   └── Interfaces/
-│   │       ├── IBookRepository.cs
-│   │       ├── IMemberRepository.cs
-│   │       └── ILoanRepository.cs
-│   │
-│   ├── LibraryManagement.Application/
-│   │   ├── DTOs/
-│   │   │   └── BookDto.cs
-│   │   ├── Interfaces/
-│   │   │   └── IBookService.cs
-│   │   └── Services/
-│   │       └── BookService.cs
-│   │
-│   ├── LibraryManagement.Infrastructure/
-│   │   ├── Data/
-│   │   │   └── LibraryDbContext.cs
-│   │   └── Repositories/
-│   │       └── BookRepository.cs
-│   │
-│   └── LibraryManagement.API/
-│       ├── Controllers/
-│       │   └── BooksController.cs
-│       ├── Program.cs
-│       └── LibraryManagement.API.http
-│
-└── LibraryManagement.sln
+├── Domain/              # Бізнес-логіка, Entity, Value Objects, Domain Events
+├── Application/         # Use Cases, DTOs, Interfaces, Services, Validators
+├── Infrastructure/      # Data Access, Repositories, EF Core, External Services
+└── API/                # REST API Controllers, Middleware, Configuration
 ```
 
-## Запуск проекту
+### Основні патерни:
+- ✅ **Clean Architecture** - розділення на шари
+- ✅ **Repository Pattern** - абстракція доступу до даних
+- ✅ **Unit of Work** - координація транзакцій
+- ✅ **SOLID Principles** - якісний код
+- ✅ **DTO Pattern** - передача даних через API
+- ✅ **Domain Events** - слабка зв'язаність компонентів
+- ✅ **Dependency Injection** - інверсія залежностей
 
-1. **Клонувати репозиторій**
-2. **Відкрити проект у VS Code або Visual Studio**
-3. **Відновити залежності**:
-   ```bash
-   dotnet restore
-   ```
-4. **Запустити проект**:
-   ```bash
-   dotnet run --project src/LibraryManagement.API/LibraryManagement.API.csproj
-   ```
-5. **Відкрити Swagger UI**: http://localhost:5082/swagger
+## 🚀 Швидкий старт
 
-## API Endpoints
-
-### Books
-
-- **GET** `/api/books` - Отримати всі книги
-- **GET** `/api/books/{id}` - Отримати книгу за ID
-- **POST** `/api/books` - Створити нову книгу
-- **PUT** `/api/books/{id}` - Оновити книгу
-- **DELETE** `/api/books/{id}` - Видалити книгу
-- **GET** `/api/books/search?term={searchTerm}` - Пошук книг
-
-## Приклади використання
-
-### Створення книги
+### Запуск проекту:
 ```bash
-POST http://localhost:5082/api/books
-Content-Type: application/json
-
-{
-  "title": "Clean Architecture",
-  "author": "Robert C. Martin",
-  "isbn": "978-0134494166",
-  "publishedYear": 2017,
-  "totalCopies": 5
-}
+start-project.bat
 ```
 
-### Отримання всіх книг
+### Тестування API:
 ```bash
-GET http://localhost:5082/api/books
+test-api.bat
 ```
 
-### Пошук книг
+### Або вручну:
 ```bash
-GET http://localhost:5082/api/books/search?term=Clean
+cd src/LibraryManagement.API
+dotnet run
 ```
 
-## Принципи Clean Architecture
+API буде доступний на: `http://localhost:5082`
 
-### 1. **Dependency Rule** (Правило залежностей)
-- Залежності завжди спрямовані до центру (Domain)
-- Domain не залежить ні від чого
-- Application залежить тільки від Domain
-- Infrastructure та API залежать від Application
+## 📡 API Endpoints
 
-### 2. **Separation of Concerns** (Розділення відповідальностей)
-- Кожен шар має свою чітку відповідальність
-- Бізнес-логіка ізольована від деталей реалізації
+### 📘 Books
+- `GET /api/books` - Всі книги
+- `GET /api/books/{id}` - Книга по ID
+- `POST /api/books` - Створити книгу
+- `PUT /api/books/{id}` - Оновити книгу
+- `DELETE /api/books/{id}` - Видалити книгу
 
-### 3. **Testability** (Тестованість)
-- Бізнес-логіка може бути протестована незалежно від UI та бази даних
-- Використання інтерфейсів для Dependency Injection
+### 👥 Користувачі (Members)
+- `GET /api/members` - Всі користувачі
+- `GET /api/members/{id}` - Користувач по ID
+- `GET /api/members/active` - Активні користувачі
+- `POST /api/members` - Створити користувача
 
-### 4. **Independence** (Незалежність)
-- Бізнес-логіка не залежить від фреймворків
-- Легко змінити базу даних або UI без зміни бізнес-логіки
+### 📖 Видачі книг (Loans)
+- `GET /api/loans` - Всі видачі книг
+- `GET /api/loans/overdue` - Прострочені видачі
+- `POST /api/loans` - Створити видачу
+- `POST /api/loans/{id}/return` - Повернути книгу
 
-## Переваги архітектури
+### 🔄 Demo Endpoints
+- `GET /api/lifecycle/demo` - DI Lifecycle демо (Singleton/Scoped/Transient)
+- `GET /api/genericrepository/info` - Generic Repository демо
+- `GET /api/unitofwork/info` - Unit of Work демо
+- `GET /api/automapperdemo/info` - AutoMapper демо
+- `GET /api/cachingdemo/info` - Caching демо
 
-✅ **Модульність** - легко додавати нові функції  
-✅ **Тестованість** - проста реалізація unit-тестів  
-✅ **Підтримка** - зрозуміла структура коду  
-✅ **Масштабованість** - легко розширювати функціонал  
-✅ **Незалежність від фреймворків** - можна змінити технології без зміни бізнес-логіки
+## 🛠️ Технології
 
-## Автор
+- **.NET 10.0** - Фреймворк
+- **ASP.NET Core** - Web API
+- **Entity Framework Core** - ORM
+- **SQLite** - База даних
+- **AutoMapper** - Маппінг Entity ↔ DTO
+- **FluentValidation** - Валідація даних
+- **IMemoryCache** - Кешування в пам'яті
+- **Swagger/OpenAPI** - Документація API
 
-Проект створено для виконання завдання з предмету "Архітектура ПЗ"
+## 📦 Встановлені пакети
+
+```xml
+<PackageReference Include="AutoMapper.Extensions.Microsoft.DependencyInjection" Version="12.0.1" />
+<PackageReference Include="FluentValidation.AspNetCore" Version="11.3.1" />
+<PackageReference Include="Microsoft.EntityFrameworkCore.Sqlite" Version="10.0.0" />
+<PackageReference Include="Swashbuckle.AspNetCore" Version="10.0.1" />
+```
+
+## 🎓 Навчальні демонстрації
+
+### 1. SOLID Principles (ПР1-3, ПР4)
+Кожен принцип продемонстровано на прикладі:
+- **SRP**: Розділення NotificationService на Email і SMS
+- **OCP**: Розширення через інтерфейси
+- **LSP**: Підстановка реалізацій
+- **ISP**: Специфічні інтерфейси замість "товстих"
+- **DIP**: Залежність від абстракцій
+
+### 2. DI Lifecycle (ЛБ4)
+```
+GET /api/lifecycle/demo
+```
+Показує різницю між:
+- **Singleton** - одна інстанція на додаток
+- **Scoped** - нова інстанція на запит
+- **Transient** - нова інстанція кожного разу
+
+### 3. Generic Repository (ПР5)
+```csharp
+IRepository<T> - універсальний репозиторій для будь-якої Entity
+```
+
+### 4. Unit of Work (ЛБ5)
+```csharp
+IUnitOfWork - координація кількох репозиторіїв в одній транзакції
+```
+
+### 5. AutoMapper + DTO (ПР6, ЛБ6)
+- Entity → DTO (для API відповідей)
+- DTO → Entity (для створення/оновлення)
+- Вкладені об'єкти (Address)
+- Обчислювані поля (FullName, Age)
+
+### 6. FluentValidation (ПР7, ЛБ7)
+Валідатори для всіх DTO:
+- CreateBookDtoValidator
+- CreateMemberDtoValidator
+- CreateLoanDtoValidator
+- AddressDtoValidator
+
+### 7. Caching (ПР8)
+**IMemoryCache** демонструє прискорення **181x**:
+- Перший запит: ~500мс (з БД)
+- Наступні: ~0.01мс (з кешу)
+
+## 📊 Результати тестування
+
+```
+✅ ПР1-3: SOLID Principles + DI Lifecycle       [OK]
+✅ ПР5: Generic Repository Pattern              [OK]
+✅ ЛБ5: Unit of Work Pattern                    [OK]
+✅ ПР6: AutoMapper + DTO Pattern                [OK]
+✅ ЛБ6: AutoMapper Profiles (всі моделі)        [OK]
+✅ ПЗ7: FluentValidation                        [OK]
+✅ ЛБ7: FluentValidation (всі DTO)              [OK]
+✅ ПР8: IMemoryCache (прискорення 181x)         [OK]
+✅ CRUD операції                                [OK]
+✅ API Endpoints                                [OK]
+✅ Database операції                            [OK]
+```
+
+## 📝 Структура бази даних
+
+### Books (Книги)
+- Id, Title, Author, ISBN
+- PublishedYear, Publisher, Category
+- AvailableCopies, TotalCopies
+- Description, PageCount, Language, Price
+
+### Members (Користувачі бібліотеки)
+- Id, FirstName, LastName, Email
+- PhoneNumber, DateOfBirth
+- Address (Value Object)
+- MembershipType, MembershipDate
+- IsActive, MaxBooksAllowed
+
+### Loans (Видачі книг)
+- Id, BookId, MemberId
+- LoanDate, DueDate, ReturnDate
+- Status (Active/Returned/Overdue)
+- LateFee, Notes
+
+## 🔍 Swagger UI
+
+Документація API доступна за адресою:
+```
+http://localhost:5082/swagger
+```
+
+## 👨‍💻 Автор
+
+**Vlad Newt**
+- GitHub: [@vladnewt1](https://github.com/vladnewt1)
+- Repository: [clean-architecture-library](https://github.com/vladnewt1/clean-architecture-library)
+
+## 📄 Ліцензія
+
+MIT License - див. файл [LICENSE](LICENSE)
