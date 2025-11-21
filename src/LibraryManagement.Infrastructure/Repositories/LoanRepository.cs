@@ -6,16 +6,18 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 
-public class LoanRepository : ILoanRepository
+/// <summary>
+/// Concrete repository for Loan entity
+/// Inherits from generic Repository<Loan> and implements ILoanRepository with specific methods
+/// </summary>
+public class LoanRepository : Repository<Loan>, ILoanRepository
 {
-    private readonly LibraryDbContext _context;
-
-    public LoanRepository(LibraryDbContext context)
+    public LoanRepository(LibraryDbContext context) : base(context)
     {
-        _context = context;
     }
 
-    public async Task<Loan?> GetByIdAsync(int id)
+    // Override to include related Book and Member
+    public override async Task<Loan?> GetByIdAsync(int id)
     {
         return await _context.Loans
             .Include(l => l.Book)
@@ -23,7 +25,8 @@ public class LoanRepository : ILoanRepository
             .FirstOrDefaultAsync(l => l.Id == id);
     }
 
-    public async Task<IEnumerable<Loan>> GetAllAsync()
+    // Override to include related Book and Member
+    public override async Task<IEnumerable<Loan>> GetAllAsync()
     {
         return await _context.Loans
             .Include(l => l.Book)
@@ -31,24 +34,7 @@ public class LoanRepository : ILoanRepository
             .ToListAsync();
     }
 
-    public async Task<Loan> AddAsync(Loan loan)
-    {
-        _context.Loans.Add(loan);
-        await _context.SaveChangesAsync();
-        
-        // Завантажуємо зв'язані дані
-        await _context.Entry(loan).Reference(l => l.Book).LoadAsync();
-        await _context.Entry(loan).Reference(l => l.Member).LoadAsync();
-        
-        return loan;
-    }
-
-    public async Task UpdateAsync(Loan loan)
-    {
-        _context.Loans.Update(loan);
-        await _context.SaveChangesAsync();
-    }
-
+    // Specific method for Loan entity
     public async Task<IEnumerable<Loan>> GetActiveLoansByMemberIdAsync(int memberId)
     {
         return await _context.Loans

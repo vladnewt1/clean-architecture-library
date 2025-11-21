@@ -5,48 +5,17 @@ using Microsoft.EntityFrameworkCore;
 
 namespace LibraryManagement.Infrastructure.Repositories;
 
-public class BookRepository : IBookRepository
+/// <summary>
+/// Concrete repository for Book entity
+/// Inherits from generic Repository<Book> and implements IBookRepository with specific methods
+/// </summary>
+public class BookRepository : Repository<Book>, IBookRepository
 {
-    private readonly LibraryDbContext _context;
-
-    public BookRepository(LibraryDbContext context)
+    public BookRepository(LibraryDbContext context) : base(context)
     {
-        _context = context;
     }
 
-    public async Task<Book?> GetByIdAsync(int id)
-    {
-        return await _context.Books.FindAsync(id);
-    }
-
-    public async Task<IEnumerable<Book>> GetAllAsync()
-    {
-        return await _context.Books.ToListAsync();
-    }
-
-    public async Task<Book> AddAsync(Book book)
-    {
-        _context.Books.Add(book);
-        await _context.SaveChangesAsync();
-        return book;
-    }
-
-    public async Task UpdateAsync(Book book)
-    {
-        _context.Books.Update(book);
-        await _context.SaveChangesAsync();
-    }
-
-    public async Task DeleteAsync(int id)
-    {
-        var book = await _context.Books.FindAsync(id);
-        if (book != null)
-        {
-            _context.Books.Remove(book);
-            await _context.SaveChangesAsync();
-        }
-    }
-
+    // Specific method for Book entity
     public async Task<IEnumerable<Book>> SearchByTitleOrAuthorAsync(string searchTerm)
     {
         return await _context.Books

@@ -2,12 +2,19 @@ using LibraryManagement.Domain.Entities;
 
 namespace LibraryManagement.Domain.Interfaces;
 
-public interface ILoanRepository
+/// <summary>
+/// Specific repository interface for Loan entity
+/// Inherits base CRUD operations from IRepository<Loan> and adds specific methods
+/// </summary>
+public interface ILoanRepository : IRepository<Loan>
 {
-    Task<Loan?> GetByIdAsync(int id);
-    Task<IEnumerable<Loan>> GetAllAsync();
-    Task<Loan> AddAsync(Loan loan);
-    Task UpdateAsync(Loan loan);
+    /// <summary>
+    /// Get active loans for a specific member
+    /// </summary>
     Task<IEnumerable<Loan>> GetActiveLoansByMemberIdAsync(int memberId);
+    
+    /// <summary>
+    /// Get all overdue loans
+    /// </summary>
     Task<IEnumerable<Loan>> GetOverdueLoansAsync();
 }
